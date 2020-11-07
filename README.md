@@ -1,2 +1,4 @@
 # JAVAEE_MVCWebFramework
-CQU JAVAEE course proj2
+CQU JAVAEE course, lab2, Web Framework based on MVC.
+
+Team member: Dadong Jiang, Runze Tian, Jiaxuan Cai
