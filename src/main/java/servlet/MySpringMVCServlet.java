@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import ioc.IOC;
 
 public class MySpringMVCServlet extends HttpServlet {
 
@@ -22,7 +23,8 @@ public class MySpringMVCServlet extends HttpServlet {
 
     private List<String> classNames = new ArrayList<>();
 
-    private Map<String, Object> ioc = new HashMap<>();
+//    private Map<String, Object> ioc = new HashMap<>();
+    private IOC ioc = new IOC();
 
     private Map<String, Method> handlerMapping = new  HashMap<>();
 
@@ -38,7 +40,7 @@ public class MySpringMVCServlet extends HttpServlet {
     }
 
     private void loadMapping() {
-        for(Map.Entry<String, Object> entry : ioc.entrySet()){
+        for(Map.Entry<String, Object> entry : ioc.getAllObject()){
             Class<?> cla = entry.getValue().getClass();
 
             String baseUrl = "";
@@ -66,13 +68,14 @@ public class MySpringMVCServlet extends HttpServlet {
     private void loadClass() {
         for(String className : classNames){
             try {
-                Class<?> cla = Class.forName(className);
-                if(cla.isAnnotationPresent(MyController.class)){
-                    ioc.put(cla.getName(), cla.newInstance());
-                }
-                else{
-                    continue;
-                }
+                ioc.addObject(className);
+//                Class<?> cla = Class.forName(className);
+//                if(cla.isAnnotationPresent(MyController.class)){
+//                    ioc.put(cla.getName(), cla.newInstance());
+//                }
+//                else{
+//                    continue;
+//                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
