@@ -21,10 +21,7 @@ public class MySpringMVCServlet extends HttpServlet {
 
     private Properties properties = new Properties();
 
-    private List<String> classNames = new ArrayList<>();
-
-//    private Map<String, Object> ioc = new HashMap<>();
-    private IOC ioc = new IOC();
+    private IOC ioc = null;
 
     private Map<String, Method> handlerMapping = new  HashMap<>();
 
@@ -34,9 +31,17 @@ public class MySpringMVCServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) {
         loadConfig(config);
-        loadClassNames(properties.getProperty("testModule"));
-        loadClass();
+        System.out.println("finish config");
+        loadBeans();
         loadMapping();
+    }
+
+    private void loadBeans(){
+        try {
+            ioc = new IOC(properties.getProperty("testModule"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadMapping() {
@@ -65,36 +70,6 @@ public class MySpringMVCServlet extends HttpServlet {
         }
     }
 
-    private void loadClass() {
-        for(String className : classNames){
-            try {
-                ioc.addObject(className);
-//                Class<?> cla = Class.forName(className);
-//                if(cla.isAnnotationPresent(MyController.class)){
-//                    ioc.put(cla.getName(), cla.newInstance());
-//                }
-//                else{
-//                    continue;
-//                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void loadClassNames(String packageName) {
-        URL url = this.getClass().getClassLoader().getResource(packageName);
-        File testModule = new File(url.getFile());
-        for(File file : testModule.listFiles()){
-            if(file.isDirectory()){
-                loadClassNames(packageName+"."+file.getName());
-            }
-            else {
-                String className = packageName +"."+ file.getName().replace(".class", "");
-                classNames.add(className);
-            }
-        }
-    }
 
     private void loadConfig(ServletConfig config){
         String configLocation = config.getInitParameter("Configuration");

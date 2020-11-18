@@ -38,7 +38,7 @@ public class TestController {
                       @MyRequestParam("p1") String p1,
                       @MyRequestParam("p2") String p2){
         try {
-            response.getWriter().println("doTest3 method success!   "+p1+"   "+p2);
+            response.getWriter().println("doTest3 method success!" + p1 + " "+p2);
         } catch (IOException e) {
             e.printStackTrace();
         }
