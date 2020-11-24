@@ -26,7 +26,7 @@ public class FileController {
     }
 
 
-    @MyRequestMapping(value = "/upload-success", method = "POST")
+    @MyRequestMapping(value = "/upload", method = "POST")
     @ResponseBody
     public String upload(@MyRequestParam("file") FileItem source) {
 

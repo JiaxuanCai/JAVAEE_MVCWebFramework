@@ -7,7 +7,7 @@
     <title>单文件上传</title>
 </head>
 <body>
-<form method="post" action="upload-success" enctype="multipart/form-data">
+<form method="post" action="upload" enctype="multipart/form-data">
     <input type="file" name="file"><br>
     <input type="submit" value="提交">
 </form>
