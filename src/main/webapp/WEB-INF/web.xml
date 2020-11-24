@@ -5,7 +5,7 @@
          version="4.0">
     <servlet>
         <servlet-name>MySpringMVC</servlet-name>
-        <servlet-class>servlet.MySpringMVCServlet</servlet-class>
+        <servlet-class>mymvc.servlet.MySpringMVCServlet</servlet-class>
         <init-param>
             <param-name>Configuration</param-name>
             <param-value>application.properties</param-value>
