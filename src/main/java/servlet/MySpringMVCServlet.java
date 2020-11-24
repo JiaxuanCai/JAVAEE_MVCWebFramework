@@ -145,16 +145,22 @@ public class MySpringMVCServlet extends HttpServlet {
 //            return;
             resp.getWriter().write("404 Not Found!");
         }
-//        List<FileItem> fileItems = null;
-//        try{
-//             fileItems = Uploadhandler.getAllFiles(req);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+
+
+
+        List<FileItem> fileItems = null;
+
+        try{
+             fileItems = Uploadhandler.getAllFiles(req);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        if(fileItems != null){
+//            for(FileItem fileItem:fileItems){
 //
-//        for(FileItem f:fileItems){
-//            System.out.println(f.getName());
+//            }
 //        }
+
 
         MVCMapping mapping = handlerMapping.get(url);
 
@@ -171,8 +177,8 @@ public class MySpringMVCServlet extends HttpServlet {
         for(int i=0; i<paramTypes.length; i++){
 //            if(request)
             String requestParam = paramTypes[i].getSimpleName();
-            if(requestParam.equals("File")){
-                paramValues[i] = new File("/Users/patrickdd/Projects/IdeaProjects/MySpringMVC/README.md");
+            if(requestParam.equals("FileItem")){
+                paramValues[i] = fileItems.get(i);
                 continue;
             }
 

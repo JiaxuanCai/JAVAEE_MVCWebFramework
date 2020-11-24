@@ -25,13 +25,11 @@ public class Uploadhandler {
      */
     static public List<FileItem> getAllFiles(HttpServletRequest request) throws Exception {
         // 检测是否为多媒体上传
-//        if (!ServletFileUpload.isMultipartContent(request)) {
-//            // 如果不是则停止
-//            PrintWriter writer = response.getWriter();
-//            writer.println("Error: 表单必须包含 enctype=multipart/form-data");
-//            writer.flush();
-//            return;
-//        }
+        if (!ServletFileUpload.isMultipartContent(request)) {
+            // 如果不是则停止
+
+            return null;
+        }
 
         // 配置上传参数
         DiskFileItemFactory factory = new DiskFileItemFactory();
