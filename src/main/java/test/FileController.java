@@ -9,8 +9,14 @@ import java.io.IOException;
 
 
 @MyController
-@MyRequestMapping("/file")
+@MyRequestMapping("/test")
 public class FileController {
+
+    @MyRequestMapping(value = "/get")
+    @ResponseBody
+    public String get(@MyRequestParam("p1") String p1, @MyRequestParam("p2") String p2){
+        return "p1="+p1 + ",p2="+p2;
+    }
 
 
     @MyRequestMapping(value = "/upload")
