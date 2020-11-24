@@ -12,6 +12,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import mymvc.model.MyModelView;
 import org.apache.commons.fileupload.FileItem;
 import mymvc.model.HandlerMapping;
 import mymvc.model.MVCMapping;
@@ -43,20 +44,18 @@ public class MySpringMVCServlet extends HttpServlet {
     }
 
     private void doDispatch(HttpServletRequest req, HttpServletResponse resp, String requestMethod) throws IOException {
-        String url = req.getRequestURI().replace(req.getContextPath(), "").replace("/temp","");
-
+        String url = req.getRequestURI().replace(req.getContextPath(), "").replace("/mvc","");
+        System.out.println("url: " + url);
         UrlAndMethod urlAndMethod = new UrlAndMethod(url, requestMethod);
 
         if(!handlerMapping.containsKey(urlAndMethod)){
             resp.getWriter().write("404 Not Found!");
         }
 
-
-
         List<FileItem> fileItems = null;
 
         try{
-             fileItems = Uploadhandler.getAllFiles(req);
+            fileItems = Uploadhandler.getAllFiles(req);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,10 +68,6 @@ public class MySpringMVCServlet extends HttpServlet {
 
         Class<?>[] paramTypes = method.getParameterTypes();
         Map<String, String[]> paramMap = req.getParameterMap();
-        for (int i = 0; i <  paramTypes.length; i++){
-            System.out.println(paramTypes[i].getSimpleName());
-        }
-
 
         System.out.println("start");
         for(String[] param: paramMap.values()){
@@ -86,12 +81,14 @@ public class MySpringMVCServlet extends HttpServlet {
         switch (requestMethod) {
             case "POST":
                 boolean fileType = false;
+                int fileIndex = 0;
                 for(int i = 0; i < paramTypes.length; i++) {
                     // 解析类型
                     String requestParam = paramTypes[i].getSimpleName();
                     if (requestParam.equals("FileItem")) {
-                        paramValues[i] = fileItems.get(i);
+                        paramValues[fileIndex] = fileItems.get(fileIndex);
                         fileType = true;
+                        fileIndex++;
                     }
                 }
                 if (!fileType){
@@ -129,8 +126,13 @@ public class MySpringMVCServlet extends HttpServlet {
                     resp.getWriter().write(json);
                     break;
                 case View:
-                    res = (String) res;
-                    req.getRequestDispatcher("/WEB-INF/" + res +".jsp").forward(req, resp);
+                    MyModelView modelView = (MyModelView) res;
+
+                    for(Map.Entry<String, Object> entry : modelView.getModelMap().entrySet()){
+                        req.setAttribute(entry.getKey(), entry.getValue());
+                    }
+
+                    req.getRequestDispatcher("/WEB-INF/" + modelView.getView() +".jsp").forward(req, resp);
                     break;
             }
 

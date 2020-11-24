@@ -40,6 +40,7 @@ public class HandlerMapping {
         }
     }
     private void loadMapping() {
+        System.out.println("load mapping");
         for(Map.Entry<String, Object> entry : ioc.getAllObject()){
             Class<?> cla = entry.getValue().getClass();
 
@@ -50,10 +51,6 @@ public class HandlerMapping {
 
             Method[] methods = cla.getMethods();
             for(Method method : methods){
-//                Annotation[] as = method.getAnnotations();
-//                for (Annotation mymvc.annotation : as) {
-//                    System.out.println(mymvc.annotation.toString());
-//                }
                 if(!method.isAnnotationPresent(MyRequestMapping.class)){
                     continue;
                 }
@@ -88,19 +85,6 @@ public class HandlerMapping {
         }
     }
 
-    private void loadClassNames(String packageName) {
-        URL url = this.getClass().getClassLoader().getResource(packageName);
-        File testModule = new File(url.getFile());
-        for(File file : testModule.listFiles()){
-            if(file.isDirectory()){
-                loadClassNames(packageName+"."+file.getName());
-            }
-            else {
-                String className = packageName +"."+ file.getName().replace(".class", "");
-                classNames.add(className);
-            }
-        }
-    }
 
     private void loadConfig(ServletConfig config){
         String configLocation = config.getInitParameter("Configuration");

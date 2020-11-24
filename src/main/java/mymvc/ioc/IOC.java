@@ -18,7 +18,9 @@ public class IOC {
     }
 
     private void loadClass(String packageName) {
+        System.out.println("load class");
         URL url = this.getClass().getClassLoader().getResource(packageName);
+        System.out.println("in ioc url: " + url);
         File testModule = null;
         if (url != null) {
             testModule = new File(url.getFile());
@@ -31,6 +33,7 @@ public class IOC {
                     try {
                         Class<?> cla = Class.forName(className);
                         if(cla.isAnnotationPresent(MyController.class)){
+                            System.out.println("addbin " + cla.getName());
                             addBean(cla.getName(), newInstance(cla));
                         }
                     } catch (Exception e) {
