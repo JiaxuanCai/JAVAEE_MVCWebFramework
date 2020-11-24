@@ -13,6 +13,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>MySpringMVC</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/temp/*</url-pattern>
     </servlet-mapping>
 </web-app>

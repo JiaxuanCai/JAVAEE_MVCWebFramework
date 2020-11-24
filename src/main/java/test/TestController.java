@@ -4,6 +4,7 @@ package test;
 import annotation.MyController;
 import annotation.MyRequestMapping;
 import annotation.MyRequestParam;
+//import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,7 @@ import java.io.IOException;
 @MyRequestMapping("/test")
 public class TestController {
 
-	 @MyRequestMapping("/doTest")
+	 @MyRequestMapping(value = "/doTest")
     public void test1(HttpServletRequest request, HttpServletResponse response,
     		@MyRequestParam("param") String param){
  		System.out.println(param);
@@ -25,7 +26,7 @@ public class TestController {
         }
     }
 
-	 @MyRequestMapping("/doTest2")
+	 @MyRequestMapping(value = "/doTest2")
     public void test2(HttpServletRequest request, HttpServletResponse response){
         try {
             response.getWriter().println("doTest2 method success!");
@@ -33,7 +34,7 @@ public class TestController {
             e.printStackTrace();
         }
     }
-    @MyRequestMapping("/doTest3")
+    @MyRequestMapping(value = "/doTest3")
     public void test3(HttpServletRequest request, HttpServletResponse response,
                       @MyRequestParam("p1") String p1,
                       @MyRequestParam("p2") String p2){

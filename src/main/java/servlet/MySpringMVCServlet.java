@@ -1,21 +1,26 @@
 package servlet;
 
-import annotation.MyController;
-import annotation.MyRequestMapping;
+import annotation.*;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
+
 import ioc.IOC;
+import org.apache.commons.fileupload.FileItem;
+import utils.MVCMapping;
+import utils.Uploadhandler;
 
 public class MySpringMVCServlet extends HttpServlet {
 
@@ -26,7 +31,7 @@ public class MySpringMVCServlet extends HttpServlet {
 //    private Map<String, Object> ioc = new HashMap<>();
     private IOC ioc = new IOC();
 
-    private Map<String, Method> handlerMapping = new  HashMap<>();
+    private Map<String, MVCMapping> handlerMapping = new  HashMap<>();
 
     private Map<String, Object> controllerMap  =new HashMap<>();
 
@@ -50,11 +55,21 @@ public class MySpringMVCServlet extends HttpServlet {
 
             Method[] methods = cla.getMethods();
             for(Method method : methods){
+//                Annotation[] as = method.getAnnotations();
+//                for (Annotation annotation : as) {
+//                    System.out.println(annotation.toString());
+//                }
                 if(!method.isAnnotationPresent(MyRequestMapping.class)){
                     continue;
                 }
                 String url = method.getAnnotation(MyRequestMapping.class).value();
-                handlerMapping.put(baseUrl+url, method);
+                if(method.isAnnotationPresent(ResponseBody.class)){
+                    handlerMapping.put(baseUrl+url, new MVCMapping(method, ResponseType.Text));
+                }
+                else if (method.isAnnotationPresent(ResponseView.class)){
+                    handlerMapping.put(baseUrl+url, new MVCMapping(method, ResponseType.View));
+                }
+
                 try {
                     controllerMap.put(baseUrl+url, cla.newInstance());
                 } catch (Exception e) {
@@ -123,39 +138,65 @@ public class MySpringMVCServlet extends HttpServlet {
     }
 
     private void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String url = req.getRequestURI().replace(req.getContextPath(), "");
+//        System.out.println(req.getContextPath());
+        String url = req.getRequestURI().replace(req.getContextPath(), "").replace("/temp","");
         if(!handlerMapping.containsKey(url)){
+//            resp.sendRedirect("/upload.jsp");
+//            return;
             resp.getWriter().write("404 Not Found!");
         }
+//        List<FileItem> fileItems = null;
+//        try{
+//             fileItems = Uploadhandler.getAllFiles(req);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        for(FileItem f:fileItems){
+//            System.out.println(f.getName());
+//        }
 
-        Method method = handlerMapping.get(url);
+        MVCMapping mapping = handlerMapping.get(url);
+
+        Method method = mapping.getMethod();
+        ResponseType type = mapping.getResponseType();
 
         Class<?>[] paramTypes = method.getParameterTypes();
-        Map<String, String[]> paramMap = req.getParameterMap();
+//        Map<String, String[]> paramMap = req.getParameterMap();
 
         Object[] paramValues = new Object[paramTypes.length];
 
+
+
         for(int i=0; i<paramTypes.length; i++){
+//            if(request)
             String requestParam = paramTypes[i].getSimpleName();
-
-            if(requestParam.equals("HttpServletRequest")){
-                paramValues[i] = req;
-                continue;
-            }
-            if(requestParam.equals("HttpServletResponse")){
-                paramValues[i] = resp;
+            if(requestParam.equals("File")){
+                paramValues[i] = new File("/Users/patrickdd/Projects/IdeaProjects/MySpringMVC/README.md");
                 continue;
             }
 
-            for(String[] param:paramMap.values()){
-                String t = Arrays.toString(param);
-                paramValues[i] = t;
-                i++;
-            }
+//            for(String[] param:paramMap.values()){
+//                String t = Arrays.toString(param);
+//                paramValues[i] = t;
+//                i++;
+//            }
         }
-
         try {
-            method.invoke(controllerMap.get(url), paramValues);
+            String res = (String)method.invoke(controllerMap.get(url), paramValues);
+
+            switch (type) {
+                case Text:
+                    //把方法的执行结果以流的方式返回给前台
+                    resp.getWriter().write(res);
+                    break;
+                case View:
+                    req.getRequestDispatcher("/WEB-INF/"+res+".jsp").forward(req, resp);
+//                    resp.sendRedirect(resresult);
+                    break;
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
