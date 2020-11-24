@@ -1,9 +1,6 @@
 package utils;
 
-import annotation.MyRequestMapping;
-import annotation.ResponseBody;
-import annotation.ResponseType;
-import annotation.ResponseView;
+import annotation.*;
 import ioc.IOC;
 
 import javax.servlet.ServletConfig;
@@ -23,7 +20,7 @@ public class HandlerMapping {
     //    private Map<String, Object> ioc = new HashMap<>();
     private IOC ioc = new IOC();
 
-    private Map<String, MVCMapping> handlerMapping = new HashMap<>();
+    private Map<UrlAndMethod, MVCMapping> handlerMapping = new HashMap<>();
 
     public HandlerMapping(ServletConfig config) {
         loadConfig(config);
@@ -32,7 +29,7 @@ public class HandlerMapping {
         loadMapping();
     }
 
-    public Map<String, MVCMapping> getAllMappings(){
+    public Map<UrlAndMethod, MVCMapping> getAllMappings(){
         return handlerMapping;
     }
 
@@ -55,9 +52,10 @@ public class HandlerMapping {
                     continue;
                 }
                 String url = method.getAnnotation(MyRequestMapping.class).value();
+                String requestMethod = method.getAnnotation(MyRequestMapping.class).method();
                 if(method.isAnnotationPresent(ResponseBody.class)){
                     try {
-                        handlerMapping.put(baseUrl+url, new MVCMapping(method, ResponseType.Text, cla.newInstance()));
+                        handlerMapping.put(new UrlAndMethod(baseUrl+url,requestMethod), new MVCMapping(method, ResponseType.Text, cla.newInstance()));
                     } catch (InstantiationException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
@@ -66,7 +64,7 @@ public class HandlerMapping {
                 }
                 else if (method.isAnnotationPresent(ResponseView.class)){
                     try {
-                        handlerMapping.put(baseUrl+url, new MVCMapping(method, ResponseType.View, cla.newInstance()));
+                        handlerMapping.put(new UrlAndMethod(baseUrl+url,requestMethod), new MVCMapping(method, ResponseType.View, cla.newInstance()));
                     } catch (InstantiationException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
@@ -88,13 +86,7 @@ public class HandlerMapping {
         for(String className : classNames){
             try {
                 ioc.addObject(className);
-//                Class<?> cla = Class.forName(className);
-//                if(cla.isAnnotationPresent(MyController.class)){
-//                    ioc.put(cla.getName(), cla.newInstance());
-//                }
-//                else{
-//                    continue;
-//                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -15,20 +15,11 @@ import org.apache.commons.fileupload.FileItem;
 import utils.HandlerMapping;
 import utils.MVCMapping;
 import utils.Uploadhandler;
+import utils.UrlAndMethod;
 
 public class MySpringMVCServlet extends HttpServlet {
 
-//    private Properties properties = new Properties();
-//
-//    private List<String> classNames = new ArrayList<>();
-//
-////    private Map<String, Object> ioc = new HashMap<>();
-//    private IOC ioc = new IOC();
-
-//    private Map<String, MVCMapping> handlerMapping = new  HashMap<>();
-
-//    private Map<String, Object> controllerMap  =new HashMap<>();
-    Map<String, MVCMapping> handlerMapping;
+    Map<UrlAndMethod, MVCMapping> handlerMapping;
 
     @Override
     public void init(ServletConfig config) {
@@ -38,20 +29,20 @@ public class MySpringMVCServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doPost(req, resp);
+        doDispatch(req, resp, "GET");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doDispatch(req, resp);
+        doDispatch(req, resp, "POST");
     }
 
-    private void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-//        System.out.println(req.getContextPath());
+    private void doDispatch(HttpServletRequest req, HttpServletResponse resp, String requestMethod) throws IOException {
         String url = req.getRequestURI().replace(req.getContextPath(), "").replace("/temp","");
-        if(!handlerMapping.containsKey(url)){
-//            resp.sendRedirect("/upload.jsp");
-//            return;
+
+        UrlAndMethod urlAndMethod = new UrlAndMethod(url, requestMethod);
+
+        if(!handlerMapping.containsKey(urlAndMethod)){
             resp.getWriter().write("404 Not Found!");
         }
 
@@ -66,7 +57,7 @@ public class MySpringMVCServlet extends HttpServlet {
         }
 
 
-        MVCMapping mapping = handlerMapping.get(url);
+        MVCMapping mapping = handlerMapping.get(urlAndMethod);
 
         Method method = mapping.getMethod();
         ResponseType type = mapping.getResponseType();
@@ -76,22 +67,27 @@ public class MySpringMVCServlet extends HttpServlet {
 
         Object[] paramValues = new Object[paramTypes.length];
 
-
-
-        for(int i=0; i<paramTypes.length; i++){
-//            if(request)
-            String requestParam = paramTypes[i].getSimpleName();
-            if(requestParam.equals("FileItem")){
-                paramValues[i] = fileItems.get(i);
-                continue;
-            }
-
-            for(String[] param:paramMap.values()){
-                String t = Arrays.toString(param);
-                paramValues[i] = t;
-                i++;
-            }
+        switch (requestMethod) {
+            case "POST":
+                for(int i=0; i<paramTypes.length; i++) {
+                    String requestParam = paramTypes[i].getSimpleName();
+                    if (requestParam.equals("FileItem")) {
+                        paramValues[i] = fileItems.get(i);
+                        continue;
+                    }
+                }
+                break;
+            case "GET":
+                for(int i=0; i<paramTypes.length; i++){
+                    for(String[] param:paramMap.values()){
+                        String t = Arrays.toString(param);
+                        paramValues[i] = t;
+                        i++;
+                    }
+                }
+                break;
         }
+
         try {
             String res = (String)method.invoke(mapping.getCla(), paramValues);
 
