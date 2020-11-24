@@ -23,7 +23,11 @@ public class MySpringMVCServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) {
-        handlerMapping = new HandlerMapping(config).getAllMappings();
+        try {
+            handlerMapping = new HandlerMapping(config).getAllMappings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

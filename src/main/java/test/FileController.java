@@ -31,7 +31,7 @@ public class FileController {
     public String upload(@MyRequestParam("file") FileItem source) {
 
         String fileName = source.getName();
-        String path = "/Users/patrickdd/Projects/IdeaProjects/MySpringMVC/temp/";
+        String path = "D:\\code\\JAVAEE_MVCWebFramework\\temp";
         File dest = new File(path + fileName);
         try {
             source.write(dest);
