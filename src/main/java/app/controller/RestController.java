@@ -1,16 +1,18 @@
-package app;
+package app.controller;
 
 import app.model.Book;
-import mymvc.annotation.MyController;
-import mymvc.annotation.MyRequestMapping;
-import mymvc.annotation.MyRequestParam;
-import mymvc.annotation.ResponseBody;
+import app.model.RestModel;
+import app.service.RestService;
+import mymvc.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 @MyController
 @MyRequestMapping("/api")
 public class RestController {
+
+    @MyAutowired
+    private RestService restService;
 
     static List<Book> allBookList = new ArrayList<Book>(){{
         add(new Book(1, "JavaBook1", "Tian Runze"));
@@ -35,6 +37,22 @@ public class RestController {
         allBookList.add(book);
         return book;
     }
+
+    @MyRequestMapping(value = "/book2", method = "GET")
+    @ResponseBody
+    public RestModel getBookMsg(){
+        String res = restService.getBookById(5);
+        System.out.println(res);
+        Book book = new Book(1, "test", "aut");
+        RestModel restModel = new RestModel();
+        restModel.setCode(200);
+        restModel.setMsg("ok");
+        restModel.setData(book);
+
+        return restModel;
+    }
+
+
 
     @MyRequestMapping(value = "/book/all", method = "GET")
     @ResponseBody

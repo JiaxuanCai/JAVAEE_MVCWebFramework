@@ -1,4 +1,4 @@
-package app;
+package app.controller;
 
 import app.model.Book;
 import mymvc.annotation.*;
@@ -11,14 +11,6 @@ import java.io.File;
 @MyController
 @MyRequestMapping("/app")
 public class AppController {
-
-
-    @MyRequestMapping(value = "/get", method = "GET")
-    @ResponseBody
-    public String get(@MyRequestParam("p1") String p1, @MyRequestParam("p2") String p2){
-        return "p1="+p1 + ",p2="+p2;
-    }
-
 
 
     @MyRequestMapping(value = "/bookpage", method = "GET")
