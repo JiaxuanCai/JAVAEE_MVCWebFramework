@@ -23,7 +23,7 @@ public class AppController {
     @MyAutowired
     private BookService bookService;
 
-    @MyRequestMapping(value = "/addbook", method="POST")
+    @MyRequestMapping(value = "/bookpage", method="POST")
     @ResponseView
     public MyModelView addBook(@MyRequestParam("id") String id, @MyRequestParam("title") String title, @MyRequestParam("author") String author){
         MyModelView mv = new MyModelView();

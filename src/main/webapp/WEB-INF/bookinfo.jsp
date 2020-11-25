@@ -58,7 +58,7 @@
                     </td>
                 </tr>
             </c:forEach>
-            <form method="post" action="addbook" enctype="application/x-www-form-urlencoded">
+            <form method="post" action="bookpage" enctype="application/x-www-form-urlencoded">
                 <tr>
                     <td><input type="text" class="form-control" name="id" placeholder="请输入编号"></td>
                     <td><input type="text" class="form-control" name="title" placeholder="请输入标题"></td>

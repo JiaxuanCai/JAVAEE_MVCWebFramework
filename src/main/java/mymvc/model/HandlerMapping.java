@@ -38,7 +38,7 @@ public class HandlerMapping {
         }
     }
     private void loadMapping()  {
-        System.out.println("load mapping");
+//        System.out.println("load mapping");
         for(Map.Entry<String, Object> entry : ioc.getAllObject()){
             Class<?> cla = entry.getValue().getClass();
 

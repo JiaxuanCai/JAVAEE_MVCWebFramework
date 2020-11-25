@@ -45,7 +45,7 @@ public class MySpringMVCServlet extends HttpServlet {
 
     private void doDispatch(HttpServletRequest req, HttpServletResponse resp, String requestMethod) throws IOException {
         String url = req.getRequestURI().replace(req.getContextPath(), "").replace("/mvc","");
-        System.out.println("url: " + url);
+//        System.out.println("url: " + url);
         UrlAndMethod urlAndMethod = new UrlAndMethod(url, requestMethod);
 
         if(!handlerMapping.containsKey(urlAndMethod)){
@@ -69,12 +69,12 @@ public class MySpringMVCServlet extends HttpServlet {
         Class<?>[] paramTypes = method.getParameterTypes();
         Map<String, String[]> paramMap = req.getParameterMap();
 
-        System.out.println("start");
-        for(String[] param: paramMap.values()){
-            String t = Arrays.toString(param);
-            System.out.println(t);
-        }
-        System.out.println("finish");
+//        System.out.println("start");
+//        for(String[] param: paramMap.values()){
+//            String t = Arrays.toString(param);
+//            System.out.println(t);
+//        }
+//        System.out.println("finish");
 
         Object[] paramValues = new Object[paramTypes.length];
 

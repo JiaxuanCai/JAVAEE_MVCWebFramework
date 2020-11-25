@@ -10,17 +10,24 @@ import java.net.URL;
 import java.util.*;
 
 public class IOC {
+    // ioc 容器
     private Map<String, Object> beanMap = null;
 
     public IOC(String packageName) throws Exception {
         beanMap = new HashMap<>();
+        // 1. doInstance
         loadClass(packageName);
+        // 2. doAutowired
         doAutowire();
     }
 
+    /**
+     * 加载类
+     * @param packageName
+     */
     private void loadClass(String packageName) {
         URL url = this.getClass().getClassLoader().getResource("/"+packageName.replaceAll("\\.", "/"));
-        System.out.println("in ioc url: " + url);
+//        System.out.println("in ioc url: " + url);
         File testModule = null;
         if (url != null) {
             testModule = new File(url.getFile());
@@ -44,7 +51,7 @@ public class IOC {
 
                             Object instance= cla.getDeclaredConstructor().newInstance();
                             addBean(beanName, instance);
-                            System.out.println("add service bean " + beanName);
+//                            System.out.println("add service bean " + beanName);
 
                             Class[] interfaces = cla.getInterfaces();
                             for (Class<?> i : interfaces){
@@ -61,7 +68,11 @@ public class IOC {
 
     }
 
-    // 通过反射生成对象
+    /**
+     * 通过反射生成对象
+     * @param classInfo
+     * @return
+     */
     public Object newInstance(Class<?> classInfo) {
         try {
             return classInfo.getDeclaredConstructor().newInstance();
@@ -70,6 +81,10 @@ public class IOC {
         }
     }
 
+    /**
+     * 自动注入属性
+     * @throws Exception
+     */
     private void doAutowire() throws Exception {
         for (Object o : beanMap.values()){
             attrAssign(o);
